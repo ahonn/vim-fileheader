@@ -75,3 +75,23 @@ class FileHeaderPlugin(object):
         else:
             self.message('fileheader.nvim: please set the your author field')
 
+    @neovim.command('UpdateFileHeader', range='', nargs='*', sync=True)
+    def updateFileHeader(self, args, range):
+        delimiter = self.getDelimiter()
+        begin = delimiter['begin']
+        char = delimiter['char']
+        end = delimiter['end']
+
+        fields = self.getFields()
+        current = self.nvim.current.buffer
+
+        authorStart = char + authorTpl.substitute(author = '')
+        if current[0] == begin and current[1].startswith(authorStart):
+            endIndex = 6 if current[6] == end else 5
+            currentTime = self.getCurrentTime()
+
+            modifiedBy = char + modifiedByTpl.substitute(modifiedBy = fields['author'])
+            modifiedTime = char + modifiedTimeTpl.substitute(modifiedTime = currentTime)
+            current[endIndex - 2] = modifiedBy
+            current[endIndex - 1] = modifiedTime
+
