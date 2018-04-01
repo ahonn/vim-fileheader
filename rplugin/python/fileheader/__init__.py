@@ -1,3 +1,8 @@
+# @Author: ahonn
+# @Date: 2018-03-31 00:38:28
+# @Last Modified by: ahonn
+# @Last Modified time: 2018-04-01 23:25:48
+
 import neovim
 import datetime
 import string
@@ -28,10 +33,13 @@ class FileHeaderPlugin(object):
     def getDelimiter(self):
         filetype = self.nvim.current.buffer.options['filetype']
         delimiterMap = self.nvim.eval('g:fileheader_delimiter_map')
-        return delimiterMap[filetype]
+        if filetype in delimiterMap:
+            return delimiterMap[filetype]
+        else:
+            return dict()
 
     def getFields(self):
-        fields = {}
+        fields = dict()
 
         fieldsByGit = self.nvim.eval('g:fileheader_by_git_config')
         username = self.getGitConfig('name')
@@ -57,41 +65,43 @@ class FileHeaderPlugin(object):
         showEmail = self.nvim.eval('g:fileheader_show_email')
         if showEmail and len(fields['email']):
             email = char + emailTpl.substitute(email = fields['email'])
-            return [begin, author, email, date, modifiedBy, modifiedTime, end]
+            header = [begin, author, email, date, modifiedBy, modifiedTime, end]
         else:
-            return [begin, author, date, modifiedBy, modifiedTime, end]
+            header = [begin, author, date, modifiedBy, modifiedTime, end]
+        return filter(None, header)
 
     @neovim.command('AddFileHeader', range='', nargs='*', sync=True)
     def addFileHeader(self, args, range):
         delimiter = self.getDelimiter()
         fields = self.getFields()
 
-        if len(fields['author']):
-            header = self.generateHeader(delimiter, fields)
-            newLineAtEnd = self.nvim.eval('g:fileheader_new_line_at_end')
-            if newLineAtEnd:
-                header.append('')
-            self.nvim.current.buffer.append(header, 0)
-        else:
-            self.message('fileheader.nvim: please set the your author field')
+        if len(delimiter):
+            if len(fields['author']):
+                header = self.generateHeader(delimiter, fields)
+                newLineAtEnd = self.nvim.eval('g:fileheader_new_line_at_end')
+                if newLineAtEnd:
+                    header.append('')
+                self.nvim.current.buffer.append(header, 0)
+            else:
+                self.message('fileheader.nvim: please set the your author field')
 
     @neovim.command('UpdateFileHeader', range='', nargs='*', sync=True)
     def updateFileHeader(self, args, range):
         delimiter = self.getDelimiter()
-        begin = delimiter['begin']
-        char = delimiter['char']
-        end = delimiter['end']
-
         fields = self.getFields()
         current = self.nvim.current.buffer
 
-        authorStart = char + authorTpl.substitute(author = '')
-        if current[0] == begin and current[1].startswith(authorStart):
-            endIndex = 6 if current[6] == end else 5
-            currentTime = self.getCurrentTime()
+        if len(delimiter):
+            begin = delimiter['begin']
+            char = delimiter['char']
+            end = delimiter['end']
+            authorStart = char + authorTpl.substitute(author = '')
+            if current[0] == begin and current[1].startswith(authorStart):
+                endIndex = 6 if current[6] == end else 5
+                currentTime = self.getCurrentTime()
 
-            modifiedBy = char + modifiedByTpl.substitute(modifiedBy = fields['author'])
-            modifiedTime = char + modifiedTimeTpl.substitute(modifiedTime = currentTime)
-            current[endIndex - 2] = modifiedBy
-            current[endIndex - 1] = modifiedTime
+                modifiedBy = char + modifiedByTpl.substitute(modifiedBy = fields['author'])
+                modifiedTime = char + modifiedTimeTpl.substitute(modifiedTime = currentTime)
+                current[endIndex - 2] = modifiedBy
+                current[endIndex - 1] = modifiedTime
 
