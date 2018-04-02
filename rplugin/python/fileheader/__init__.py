@@ -70,6 +70,11 @@ class FileHeaderPlugin(object):
             header = [begin, author, date, modifiedBy, modifiedTime, end]
         return filter(None, header)
 
+    def findIndexByStart(self, start):
+        header = self.nvim.current.buffer[:9]
+        index = [i for i, line in enumerate(header) if line.startswith(start)]
+        return index[0] if len(index) else None
+
     @neovim.command('AddFileHeader', range='', nargs='*', sync=True)
     def addFileHeader(self, args, range):
         delimiter = self.getDelimiter()
@@ -92,16 +97,14 @@ class FileHeaderPlugin(object):
         current = self.nvim.current.buffer
 
         if len(delimiter):
-            begin = delimiter['begin']
             char = delimiter['char']
-            end = delimiter['end']
-            authorStart = char + authorTpl.substitute(author = '')
-            if current[0] == begin and current[1].startswith(authorStart):
-                endIndex = 6 if current[6] == end else 5
-                currentTime = self.getCurrentTime()
+            currentTime = self.getCurrentTime()
 
-                modifiedBy = char + modifiedByTpl.substitute(modifiedBy = fields['author'])
-                modifiedTime = char + modifiedTimeTpl.substitute(modifiedTime = currentTime)
-                current[endIndex - 2] = modifiedBy
-                current[endIndex - 1] = modifiedTime
+            byStarts = char + modifiedByTpl.substitute(modifiedBy = '')
+            byIndex = self.findIndexByStart(byStarts)
+            timeStarts = char + modifiedTimeTpl.substitute(modifiedTime = '')
+            timeIndex = self.findIndexByStart(timeStarts)
 
+            if byIndex != None and timeIndex != None:
+                current[byIndex] = char + modifiedByTpl.substitute(modifiedBy = fields['author'])
+                current[timeIndex] = char + modifiedTimeTpl.substitute(modifiedTime = currentTime)

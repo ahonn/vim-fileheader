@@ -32,7 +32,7 @@ if !exists('g:fileheader_new_line_at_end')
 endif
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
-let s:c_style = { 'begin': '/**', 'char': ' * ', 'end': ' */' }
+let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
 let s:sass_style = { 'begin': '', 'char': '// ', 'end': '' }
 let s:shell_style = { 'begin': '', 'char': '# ', 'end': '' }
 let s:delimiter_map = {
