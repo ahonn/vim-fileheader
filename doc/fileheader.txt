@@ -1,0 +1,120 @@
+*fileheader.txt* A Neovim plugin for add and update your authoring information in header comment
+
+Author: Ahonn Jiang <https://github.com/ahonn>
+License: Same terms as Vim itself (see |license|)
+
+CONTENTS                                        *fileheder-contents*
+Introduction                                    |fileheader-introduction|
+Install                                         |fileheader-install|
+Variables                                       |fileheader-variables|
+Commands                                        |fileheader-commands|
+About                                           |fileheader-about|
+
+==============================================================================
+INTRODUCTION                                    *fileheader-introduction*
+
+A Neovim plugin for add and update your authoring information in header comment
+
+Run `AddFileHeader` add authoring information
+
+Run `UpdateFileHeader` update authoring information
+
+==============================================================================
+Install                                    *fileheader-install*
+
+- You need update neovim-python module.
+>
+    pip3 install --upgrade neovim
+<
+
+- If you don't already use a plugin manager, I recommend vim-plug
+
+vim-plug
+>
+  Plug 'ahonn/fileheader.nvim'
+<
+
+Vundle
+>
+  Plugin 'ahonn/fileheader.nvim'
+<
+
+- Execute the ":UpdateRemotePlugins"
+
+==============================================================================
+VARIABLES                                       *fileheader-variables*
+
+g:fileheader_auto_add                               *g:fileheader_auto_add*
+
+                Auto add file header when create new file.
+
+                Default value: 0
+
+g:fileheader_auto_update                            *g:fileheader_auto_update*
+
+                Auto update file header when save.
+
+                Default value: 1
+
+g:fileheader_default_author                         *g:fileheader_default_author*
+
+                Set default author name.
+
+                Default value: ''
+
+g:fileheader_default_email                          *g:fileheader_default_email*
+
+                Set default email.
+
+                Default value: ''
+
+g:fileheader_show_email                             *g:fileheader_show_email*
+
+                Show email when is 1.
+
+                Default value: 1
+
+g:fileheader_by_git_config                          *g:fileheader_by_git_config*
+
+                Get information by `git config` command. if not empty, ignore
+                `g:fileheader_default_author` and `g:fileheader_default_email`.
+                use git config username and email.
+
+                Default value: 0
+
+g:fileheader_new_line_at_end                         *g:fileheader_new_line_at_end*
+
+                Add new line at end.
+
+                Default value: 1
+
+g:fileheader_delimiter_map                           *g:fileheader_delimiter_map*
+
+                Custom file header delimiter.
+
+>
+  let g:fileheader_delimiter_map = {
+    \ 'javascript': { 'begin': '/**', 'char': ' * ', 'end': ' */' }
+    \ }
+<
+
+                Default value see `plugin/fileheader.vim`.
+
+==============================================================================
+COMMANDS                                         *fileheader-commands*
+
+*AddFileHeader*
+                Add authoring information
+
+*UpdateFileHeader*
+                Update authoring information
+
+==============================================================================
+ABOUT                                           *fileheader-about*
+
+You can get the latest version, see the changelog, or report a bug on GitHub:
+
+https://github.com/ahonn/filehdaer.nvim
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl
