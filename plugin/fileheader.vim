@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-03-31 00:38:23
 " @Last Modified by: ahonn
-" @Last Modified time: 2018-04-01 23:25:54
+" @Last Modified time: 2018-04-04 17:26:05
 
 if !exists('g:fileheader_auto_add')
   let g:fileheader_auto_add = 0
@@ -35,6 +35,10 @@ let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
 let s:sass_style = { 'begin': '', 'char': '// ', 'end': '' }
 let s:shell_style = { 'begin': '', 'char': '# ', 'end': '' }
+let s:haskell_style = { 'begin': '', 'char': '-- ', 'end': '' }
+let s:html_style = { 'begin': "<!--", 'char': ' ', 'end': '-->' }
+let s:erlang_style = { 'begin': '', 'char': '% ', 'end': '' }
+let s:lisp_style = { 'begin': '', 'char': ';; ', 'end': '' }
 let s:delimiter_map = {
   \ 'vim': s:vim_style,
   \ 'c': s:c_style,
@@ -51,7 +55,18 @@ let s:delimiter_map = {
   \ 'less': s:c_style,
   \ 'sass': s:sass_style,
   \ 'scss': s:sass_style,
+  \ 'shell': s:shell_style,
   \ 'python': s:shell_style,
+  \ 'ruby': s:shell_style,
+  \ 'yaml': s:shell_style,
+  \ 'toml': s:shell_style,
+  \ 'haskell': s:haskell_style,
+  \ 'lua': s:haskell_style,
+  \ 'html': s:html_style,
+  \ 'xml': s:html_style,
+  \ 'erlang': s:erlang_style,
+  \ 'clojure': s:lisp_style,
+  \ 'scheme': s:lisp_style,
   \ }
 
 let g:fileheader_delimiter_map = s:delimiter_map
