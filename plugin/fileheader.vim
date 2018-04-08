@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-03-31 00:38:23
 " @Last Modified by: ahonn
-" @Last Modified time: 2018-04-04 17:26:05
+" @Last Modified time: 2018-04-08 16:54:28
 
 if !exists('g:fileheader_auto_add')
   let g:fileheader_auto_add = 0
@@ -75,9 +75,15 @@ if exists('g:fileheader_delimiter_map')
   call extend(s:delimiter_map, g:fileheader_delimiter_map)
 endif
 
+function! AddFileHeaderWhenNew()
+  if line('$') == 1 && getline(1) == ''
+    exec 'AddFileHeader'
+  endif
+endfunction
+
 " autocmd
 if g:fileheader_auto_add
-  autocmd BufNewFile * AddFileHeader
+  autocmd BufRead * call AddFileHeaderWhenNew()
 endif
 
 if g:fileheader_auto_update
