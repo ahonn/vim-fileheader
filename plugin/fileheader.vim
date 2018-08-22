@@ -1,7 +1,7 @@
 " @Author: ahonn
-" @Date: 2018-03-31 00:38:23
-" @Last Modified by: ahonn
-" @Last Modified time: 2018-04-08 16:54:28
+" @Date  : 2018-03-31 00:38:23
+" @Last Modified by: clouduan
+" @Last Modified time: 2018-08-22 16:02:05
 
 if !exists('g:fileheader_auto_add')
   let g:fileheader_auto_add = 0
@@ -29,6 +29,18 @@ endif
 
 if !exists('g:fileheader_new_line_at_end')
   let g:fileheader_new_line_at_end = 1
+endif
+
+if !exists('g:fileheader_last_modified_by')
+    let g:fileheader_last_modified_by = 1
+endif
+
+if !exists('g:fileheader_last_modified_time')
+    let g:fileheader_last_modified_time = 1
+endif
+
+if !exists('g:fileheader_timestamp_format')
+    let g:fileheader_timestamp_format = '%Y-%m-%d %H:%M:%S'
 endif
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
