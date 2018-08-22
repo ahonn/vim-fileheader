@@ -170,10 +170,8 @@ class FileHeaderPlugin(object):
             if self.showModifiedBy():
                 # if modifiedBy header header exists
                 if byIndex:
-                    self.message('4')
                     current[authorIndex+3] = self.modifiedByHeader
                 else:
-                    self.message('5')
                     current.append(self.modifiedByHeader, authorIndex+3)
             else:
                 if byIndex:
