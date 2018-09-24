@@ -32,7 +32,7 @@ class FileHeaderPlugin(object):
         self.modifiedTimeHeader = ''
 
     def message(self, message):
-        self.nvim.command('[fileheader.nvim] echom "' + str(message) + '"')
+        self.nvim.command('echom "' + '[fileheader.nvim] ' + str(message) + '"')
 
     def getCurrentTime(self):
         now = datetime.datetime.now()
@@ -110,6 +110,12 @@ class FileHeaderPlugin(object):
         index = [i for i, line in enumerate(header) if line.startswith(start)]
         return index[0] if len(index) else None
 
+    def getContent(self, index):
+        if index:
+            return self.nvim.current.buffer[index]
+        else:
+            return None
+
     @neovim.command('AddFileHeader', range='', nargs='*', sync=True)
     def addFileHeader(self, args, range):
         # Set specific values for variables, such as self.author/email...
@@ -146,10 +152,13 @@ class FileHeaderPlugin(object):
             # Try to get headers indexs
             emailStart = self.char + emailTpl.substitute(email='')
             emailIndex = self.findIndex(emailStart)
-            byStarts = self.char + modifiedByTpl.substitute(modifiedBy='')
-            byIndex = self.findIndex(byStarts)
-            timeStarts = self.char + modifiedTimeTpl.substitute(modifiedTime='')
-            timeIndex = self.findIndex(timeStarts)
+            emailContent = self.getContent(emailIndex)
+            modifiedByStarts = self.char + modifiedByTpl.substitute(modifiedBy='')
+            modifiedByIndex = self.findIndex(modifiedByStarts)
+            modifiedByContent = self.getContent(modifiedByIndex)
+            modifiedTimeStarts = self.char + modifiedTimeTpl.substitute(modifiedTime='')
+            modifiedTimeIndex = self.findIndex(modifiedTimeStarts)
+            modifiedTimeContent = self.getContent(modifiedTimeIndex)
 
             # Use authorIndex as a position mark
             # emailHeader:        authorIndex+1
@@ -160,7 +169,9 @@ class FileHeaderPlugin(object):
             if self.showEmail():
                 # if email header exists
                 if emailIndex:
-                    current[authorIndex + 1] = self.emailHeader
+                    # if something changed
+                    if self.emailHeader != emailContent:
+                        current[authorIndex + 1] = self.emailHeader
                 else:
                     current.append(self.emailHeader, authorIndex + 1)
             else:
@@ -170,22 +181,26 @@ class FileHeaderPlugin(object):
 
             if self.showModifiedBy():
                 # if modifiedBy header header exists
-                if byIndex:
-                    current[authorIndex + 3] = self.modifiedByHeader
+                if modifiedByIndex:
+                    # if something changed
+                    if self.modifiedByHeader != modifiedByContent:
+                        current[authorIndex + 3] = self.modifiedByHeader
                 else:
                     current.append(self.modifiedByHeader, authorIndex + 3)
             else:
-                if byIndex:
+                if modifiedByIndex:
                     current[authorIndex + 3] = None
                 authorIndex -= 1
 
             if self.showModifiedTime():
                 # if modifiedTime header header exists
-                if timeIndex:
-                    current[authorIndex + 4] = self.modifiedTimeHeader
+                if modifiedTimeIndex:
+                    # if something changed
+                    if self.modifiedTimeHeader != modifiedTimeContent:
+                        current[authorIndex + 4] = self.modifiedTimeHeader
                 else:
                     current.append(self.modifiedTimeHeader, authorIndex + 4)
             else:
-                if timeIndex:
+                if modifiedTimeIndex:
                     current[authorIndex + 4] = None
                 authorIndex -= 1
