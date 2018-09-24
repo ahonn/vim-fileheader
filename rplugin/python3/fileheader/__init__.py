@@ -105,7 +105,7 @@ class FileHeaderPlugin(object):
 
         return list(filter(None, header))
 
-    def findIndexByStart(self, start):
+    def findIndex(self, start):
         header = self.nvim.current.buffer[:9]
         index = [i for i, line in enumerate(header) if line.startswith(start)]
         return index[0] if len(index) else None
@@ -138,18 +138,18 @@ class FileHeaderPlugin(object):
 
         if len(self.delimiter):
             authorStart = self.char + authorTpl.substitute(author='')
-            authorIndex = self.findIndexByStart(authorStart)
+            authorIndex = self.findIndex(authorStart)
             # if file headers don't exist, then quit
             if authorIndex is None:
                 return
 
             # Try to get headers indexs
             emailStart = self.char + emailTpl.substitute(email='')
-            emailIndex = self.findIndexByStart(emailStart)
+            emailIndex = self.findIndex(emailStart)
             byStarts = self.char + modifiedByTpl.substitute(modifiedBy='')
-            byIndex = self.findIndexByStart(byStarts)
+            byIndex = self.findIndex(byStarts)
             timeStarts = self.char + modifiedTimeTpl.substitute(modifiedTime='')
-            timeIndex = self.findIndexByStart(timeStarts)
+            timeIndex = self.findIndex(timeStarts)
 
             # Use authorIndex as a position mark
             # emailHeader:        authorIndex+1
