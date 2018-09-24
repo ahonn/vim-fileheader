@@ -1,7 +1,7 @@
 # @Author: ahonn
 # @Date: 2018-03-31 00:38:28
-# @Last Modified by: clouduan
-# @Last Modified time: 2018-08-22 16:00:53
+# @Last Modified by: VoldikSS
+# @Last Modified time: 2018-09-24
 
 import neovim
 import datetime
@@ -12,6 +12,7 @@ emailTpl = string.Template('@Email: $email')
 dateTpl = string.Template('@Date: $date')
 modifiedByTpl = string.Template('@Last Modified by: $modifiedBy')
 modifiedTimeTpl = string.Template('@Last Modified time: $modifiedTime')
+
 
 @neovim.plugin
 class FileHeaderPlugin(object):
@@ -31,13 +32,13 @@ class FileHeaderPlugin(object):
         self.modifiedTimeHeader = ''
 
     def message(self, message):
-        self.nvim.command('echo "' + message + '"')
+        self.nvim.command('[fileheader.nvim] echom "' + str(message) + '"')
 
     def getCurrentTime(self):
         now = datetime.datetime.now()
         timeStamp = self.nvim.eval('g:fileheader_timestamp_format')
         self.date = now.strftime(timeStamp)
-        self.dateHeader = self.char + dateTpl.substitute(date = self.date)
+        self.dateHeader = self.char + dateTpl.substitute(date=self.date)
 
     def getGitConfig(self, key):
         out = self.nvim.funcs.system('git config user.' + key)
@@ -63,25 +64,25 @@ class FileHeaderPlugin(object):
             self.author = self.nvim.eval('g:fileheader_default_author')
             self.email = self.nvim.eval('g:fileheader_default_email')
 
-        self.authorHeader = self.char + authorTpl.substitute(author = self.author)
+        self.authorHeader = self.char + authorTpl.substitute(author=self.author)
 
     def showEmail(self):
         if self.nvim.eval('g:fileheader_show_email'):
-            self.emailHeader = self.char + emailTpl.substitute(email = self.email)
+            self.emailHeader = self.char + emailTpl.substitute(email=self.email)
             return 1
         else:
             return 0
 
     def showModifiedBy(self):
         if self.nvim.eval('g:fileheader_last_modified_by'):
-            self.modifiedByHeader = self.char + modifiedByTpl.substitute(modifiedBy = self.author)
+            self.modifiedByHeader = self.char + modifiedByTpl.substitute(modifiedBy=self.author)
             return 1
         else:
             return 0
 
     def showModifiedTime(self):
         if self.nvim.eval('g:fileheader_last_modified_time'):
-            self.modifiedTimeHeader = self.char + modifiedTimeTpl.substitute(modifiedTime = self.date)
+            self.modifiedTimeHeader = self.char + modifiedTimeTpl.substitute(modifiedTime=self.date)
             return 1
         else:
             return 0
@@ -102,7 +103,7 @@ class FileHeaderPlugin(object):
             header.append(self.modifiedTimeHeader)
         header.append(self.end)
 
-        return filter(None, header)
+        return list(filter(None, header))
 
     def findIndexByStart(self, start):
         header = self.nvim.current.buffer[:9]
@@ -143,11 +144,11 @@ class FileHeaderPlugin(object):
                 return
 
             # Try to get headers indexs
-            emailStart = self.char + emailTpl.substitute(email= '')
+            emailStart = self.char + emailTpl.substitute(email='')
             emailIndex = self.findIndexByStart(emailStart)
-            byStarts = self.char + modifiedByTpl.substitute(modifiedBy = '')
+            byStarts = self.char + modifiedByTpl.substitute(modifiedBy='')
             byIndex = self.findIndexByStart(byStarts)
-            timeStarts = self.char + modifiedTimeTpl.substitute(modifiedTime = '')
+            timeStarts = self.char + modifiedTimeTpl.substitute(modifiedTime='')
             timeIndex = self.findIndexByStart(timeStarts)
 
             # Use authorIndex as a position mark
@@ -159,32 +160,32 @@ class FileHeaderPlugin(object):
             if self.showEmail():
                 # if email header exists
                 if emailIndex:
-                    current[authorIndex+1] = self.emailHeader
+                    current[authorIndex + 1] = self.emailHeader
                 else:
-                    current.append(self.emailHeader, authorIndex+1)
+                    current.append(self.emailHeader, authorIndex + 1)
             else:
                 if emailIndex:
-                    current[authorIndex+1] = None
+                    current[authorIndex + 1] = None
                 authorIndex -= 1
 
             if self.showModifiedBy():
                 # if modifiedBy header header exists
                 if byIndex:
-                    current[authorIndex+3] = self.modifiedByHeader
+                    current[authorIndex + 3] = self.modifiedByHeader
                 else:
-                    current.append(self.modifiedByHeader, authorIndex+3)
+                    current.append(self.modifiedByHeader, authorIndex + 3)
             else:
                 if byIndex:
-                    current[authorIndex+3] = None
+                    current[authorIndex + 3] = None
                 authorIndex -= 1
 
             if self.showModifiedTime():
                 # if modifiedTime header header exists
                 if timeIndex:
-                    current[authorIndex+4] = self.modifiedTimeHeader
+                    current[authorIndex + 4] = self.modifiedTimeHeader
                 else:
-                    current.append(self.modifiedTimeHeader, authorIndex+4)
+                    current.append(self.modifiedTimeHeader, authorIndex + 4)
             else:
                 if timeIndex:
-                    current[authorIndex+4] = None
+                    current[authorIndex + 4] = None
                 authorIndex -= 1
