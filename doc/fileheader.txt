@@ -88,6 +88,24 @@ g:fileheader_new_line_at_end                         *g:fileheader_new_line_at_e
 
                 Default value: 1
 
+g:fileheader_last_modified_by                        *g:fileheader_last_modified_by*
+
+                Show `LastModifiedBy` when is 1
+
+                Default value: 1
+
+g:fileheader_last_modified_time                      *g:fileheader_last_modified_time*
+
+                Show `LastModifiedTime` when is 1
+
+                Default value: 1
+
+g:fileheader_timestamp_format                        *g:fileheader_last_modified_time*
+
+                Datetime format for `LastModifiedTime`
+
+                Default value: '%Y-%m-%d %H:%M:%S'
+
 g:fileheader_delimiter_map                           *g:fileheader_delimiter_map*
 
                 Custom file header delimiter.
