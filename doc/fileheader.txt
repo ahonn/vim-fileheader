@@ -22,21 +22,16 @@ Run `UpdateFileHeader` update authoring information
 ==============================================================================
 Install                                    *fileheader-install*
 
-- You need update neovim-python module.
->
-    pip3 install --upgrade neovim
-<
-
 - If you don't already use a plugin manager, I recommend vim-plug
 
 vim-plug
 >
-  Plug 'ahonn/fileheader.nvim'
+  Plug 'ahonn/vim-fileheader'
 <
 
 Vundle
 >
-  Plugin 'ahonn/fileheader.nvim'
+  Plugin 'ahonn/vim-fileheader'
 <
 
 - Execute the ":UpdateRemotePlugins"
@@ -80,7 +75,7 @@ g:fileheader_by_git_config                          *g:fileheader_by_git_config*
                 `g:fileheader_default_author` and `g:fileheader_default_email`.
                 use git config username and email.
 
-                Default value: 0
+                Default value: 1
 
 g:fileheader_new_line_at_end                         *g:fileheader_new_line_at_end*
 
