@@ -25,7 +25,7 @@ Plugin 'ahonn/vim-fileheader'
 ```
 
 ## Document
-see [fileheader.txt](https://github.com/ahonn/fileheader.nvim/blob/master/doc/fileheader.txt)
+see [fileheader.txt](https://github.com/ahonn/vim-fileheader/blob/master/doc/fileheader.txt)
 
 ## License
 Same terms as Vim itself (see |license|)
