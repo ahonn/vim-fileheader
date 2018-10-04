@@ -1,7 +1,7 @@
 " @Author: ahonn <ahonn95@outlook.com>
 " @Date: 2018-10-03 23:21:37
-" @Last Modified by: ahonn <ahonn95@outlook.com>
-" @Last Modified time: 2018-10-03 23:54:55
+" @Last Modified by:  <ahonn95@outlook.com>
+" @Last Modified time: 2018-10-04 20:39:57
 
 if !exists('g:fileheader_auto_add')
   let g:fileheader_auto_add = 0
@@ -35,26 +35,16 @@ if !exists('g:g:fileheader_delimiter_map')
   let g:fileheader_delimiter_map = {}
 endif
 
-if g:fileheader_by_git_config == 1
-  let s:author = get(systemlist('git config user.name'), 0)
-  if !empty(s:author)
-    let g:fileheader_author = s:author
-  endif
-
-  if g:fileheader_show_email
-    let s:email = get(systemlist('git config user.email'), 0)
-    if !empty(s:email)
-      let g:fileheader_email = s:email
-    endif
-  endif
-endif
-
 if g:fileheader_auto_add
   autocmd BufRead * call fileheader#add_file_header()
 endif
 
 if g:fileheader_auto_update
   autocmd BufWritePre * call fileheader#update_file_header()
+endif
+
+if g:fileheader_by_git_config == 1
+  autocmd VimEnter * call fileheader#load_git_config()
 endif
 
 command! -range=% AddFileHeader call fileheader#add_file_header()

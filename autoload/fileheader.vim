@@ -1,7 +1,7 @@
 " @Author: ahonn <ahonn95@outlook.com>
 " @Date: 2018-10-03 23:38:15
 " @Last Modified by: ahonn <ahonn95@outlook.com>
-" @Last Modified time: 2018-10-04 19:19:54
+" @Last Modified time: 2018-10-04 21:27:07
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
@@ -57,6 +57,52 @@ let s:editor_templates = [
 
 let s:templates = s:creator_templates + s:editor_templates
 
+function! fileheader#run_command_async(cmd, handler)
+  if has('nvim')
+    call jobstart(a:cmd, { 'on_stdout': a:handler })
+  else
+    if has('job')
+      call job_start(a:cmd, { 'close_cb': a:handler })
+    else
+      throw 'vim-fileheader: please use vim 8.0 or above'
+    endif
+  endif
+endfunction
+
+function! fileheader#load_git_config()
+  if has('nvim')
+    function! s:set_author_handler(id, data, evnet)
+      let msg = join(a:data, '')
+      let g:fileheader_author = msg
+    endfunction
+  else
+    function! s:set_author_handler(channel)
+      while ch_status(a:channel, {'part': 'out'}) == 'buffered'
+        let msg = ch_read(a:channel)
+        let g:fileheader_author = msg
+      endwhile
+    endfunction
+  endif
+  call fileheader#run_command_async('git config user.name', function('s:set_author_handler'))
+
+  if g:fileheader_show_email
+    if has('nvim')
+      function! s:set_email_handler(id, data, event)
+        let msg = join(a:data, '')
+        let g:fileheader_email = msg
+      endfunction
+    else
+      function! s:set_email_handler(channel)
+        while ch_status(a:channel, {'part': 'out'}) == 'buffered'
+          let msg = ch_read(a:channel)
+          let g:fileheader_email = msg
+        endwhile
+      endfunction
+    endif
+    call fileheader#run_command_async('git config user.email', function('s:set_email_handler'))
+  endif
+endfunction
+
 function! fileheader#get_file_name()
   let ext = tolower(expand("%:e"))
   let fname = tolower(expand('%<'))
@@ -66,8 +112,8 @@ endfunction
 
 function! fileheader#file_not_modifyed()
   let filename = fileheader#get_file_name()
-  let file_content = join(readfile(filename), '')
-  let buffer_content = join(getline(1, '$'), '')
+  let file_content = readfile(filename)
+  let buffer_content = getline(1, '$')
 
   let not_modifyed = buffer_content == file_content
   return not_modifyed
@@ -143,8 +189,13 @@ function! fileheader#update_file_header()
     for tpl in s:editor_templates
       let pat = substitute(tpl, '{{.*}}', '.*', 'g')
       let sub = fileheader#render_template(tpl, 1)
-      let last_line = line('$')
-      silent! execute ':1,'.last_line.'s/'.pat.'/'.sub.'/g'
+
+      let max_line_number = line('$')
+      let last_line_number = 10
+      if (max_line_number < 10)
+        let last_line_number = max_line_number
+      endif
+      silent! execute ':1,'.last_line_number.'s/'.pat.'/'.sub.'/g'
     endfor
     call setpos('.', cursor)
   endif
