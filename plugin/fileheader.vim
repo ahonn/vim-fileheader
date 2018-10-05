@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:21:37
 " @Last Modified by: ahonn
-" @Last Modified time: 2018-10-05 10:52:20
+" @Last Modified time: 2018-10-05 11:25
 
 if !exists('g:fileheader_auto_add')
   let g:fileheader_auto_add = 0
@@ -21,6 +21,10 @@ endif
 
 if !exists('g:fileheader_show_email')
   let g:fileheader_show_email = 1
+endif
+
+if !exists('fileheader_date_format')
+  let g:fileheader_date_format = "%Y-%m-%d %H:%M:%S"
 endif
 
 if !exists('fileheader_by_git_config')

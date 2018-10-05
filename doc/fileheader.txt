@@ -66,6 +66,12 @@ g:fileheader_show_email                             *g:fileheader_show_email*
 
                 Default value: 1
 
+g:fileheader_date_format                             *g:fileheader_date_format*
+
+                Set file header date format.
+
+                Default value: %Y-%m-%d %H:%M:%S
+
 g:fileheader_by_git_config                          *g:fileheader_by_git_config*
 
                 Get information by `git config` command. if not empty, ignore

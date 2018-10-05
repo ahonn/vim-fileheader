@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:38:15
 " @Last Modified by: ahonn
-" @Last Modified time: 2018-10-05 11:18:39
+" @Last Modified time: 2018-10-05 11:24:49
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
@@ -137,7 +137,7 @@ function! fileheader#render_template(tpl, update)
   end
 
   if match(line, '{{date}}') != -1
-    let date = strftime("%Y-%m-%d %H:%M:%S")
+    let date = strftime(g:fileheader_date_format)
     if (a:update)
       let not_modifyed = fileheader#file_not_modifyed()
       if not_modifyed
