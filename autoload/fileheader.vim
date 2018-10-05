@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:38:15
 " @Last Modified by: ahonn
-" @Last Modified time: 2018-10-05 10:51:56
+" @Last Modified time: 2018-10-05 11:18:39
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
@@ -212,7 +212,7 @@ function! fileheader#update_file_header()
       if (max_line_number < 10)
         let last_line_number = max_line_number
       endif
-      silent! execute ':1,'.last_line_number.'s/'.pat.'/'.sub.'/g'
+      silent! execute ':undojoin | 1,'.last_line_number.'s/'.pat.'/'.sub.'/g'
     endfor
     call setpos('.', cursor)
   endif
