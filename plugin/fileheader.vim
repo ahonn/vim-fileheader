@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:21:37
 " @Last Modified by: ahonn
-" @Last Modified time: 2018-10-05 11:25
+" @Last Modified time: 2018-10-05 11:37:42
 
 if !exists('g:fileheader_auto_add')
   let g:fileheader_auto_add = 0
@@ -23,11 +23,11 @@ if !exists('g:fileheader_show_email')
   let g:fileheader_show_email = 1
 endif
 
-if !exists('fileheader_date_format')
+if !exists('g:fileheader_date_format')
   let g:fileheader_date_format = "%Y-%m-%d %H:%M:%S"
 endif
 
-if !exists('fileheader_by_git_config')
+if !exists('g:fileheader_by_git_config')
   let g:fileheader_by_git_config = 1
 endif
 
@@ -35,7 +35,7 @@ if !exists('g:fileheader_new_line_at_end')
   let g:fileheader_new_line_at_end = 1
 endif
 
-if !exists('g:g:fileheader_delimiter_map')
+if !exists('g:fileheader_delimiter_map')
   let g:fileheader_delimiter_map = {}
 endif
 
