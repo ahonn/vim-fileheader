@@ -32,16 +32,13 @@ vim-plug
 Vundle
 >
   Plugin 'ahonn/vim-fileheader'
-<
-
-- Execute the ":UpdateRemotePlugins"
 
 ==============================================================================
 VARIABLES                                       *fileheader-variables*
 
 g:fileheader_auto_add                               *g:fileheader_auto_add*
 
-                Auto add file header when create new file.
+                Auto add file header when create or read new file.
 
                 Default value: 0
 
@@ -86,14 +83,12 @@ g:fileheader_new_line_at_end                         *g:fileheader_new_line_at_e
 g:fileheader_delimiter_map                           *g:fileheader_delimiter_map*
 
                 Custom file header delimiter.
-
 >
   let g:fileheader_delimiter_map = {
     \ 'javascript': { 'begin': '/**', 'char': ' * ', 'end': ' */' }
     \ }
 <
-
-                Default value see `plugin/fileheader.vim`.
+                Default value see `autoload/fileheader.vim`.
 
 ==============================================================================
 COMMANDS                                         *fileheader-commands*
