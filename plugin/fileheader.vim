@@ -1,7 +1,7 @@
-" @Author: ahonn <ahonn95@outlook.com>
+" @Author: ahonn
 " @Date: 2018-10-03 23:21:37
-" @Last Modified by:  <ahonn95@outlook.com>
-" @Last Modified time: 2018-10-04 20:39:57
+" @Last Modified by: ahonn
+" @Last Modified time: 2018-10-05 10:52:20
 
 if !exists('g:fileheader_auto_add')
   let g:fileheader_auto_add = 0
@@ -36,7 +36,7 @@ if !exists('g:g:fileheader_delimiter_map')
 endif
 
 if g:fileheader_auto_add
-  autocmd BufRead * call fileheader#add_file_header()
+  autocmd BufReadPost,BufNewFile * call fileheader#auto_add_file_header()
 endif
 
 if g:fileheader_auto_update

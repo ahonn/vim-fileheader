@@ -1,7 +1,7 @@
-" @Author: ahonn <ahonn95@outlook.com>
+" @Author: ahonn
 " @Date: 2018-10-03 23:38:15
-" @Last Modified by: ahonn <ahonn95@outlook.com>
-" @Last Modified time: 2018-10-04 21:27:07
+" @Last Modified by: ahonn
+" @Last Modified time: 2018-10-05 10:51:56
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
@@ -46,12 +46,12 @@ if exists('g:fileheader_delimiter_map')
 endif
 
 let s:creator_templates = [
-  \ '@Author: {{author}} <{{email}}>',
+  \ '@Author: {{author}}{{email}}',
   \ '@Date: {{date}}',
   \ ]
 
 let s:editor_templates = [
-  \ '@Last Modified by: {{author}} <{{email}}>',
+  \ '@Last Modified by: {{author}}{{email}}',
   \ '@Last Modified time: {{date}}',
   \ ]
 
@@ -112,11 +112,14 @@ endfunction
 
 function! fileheader#file_not_modifyed()
   let filename = fileheader#get_file_name()
+
+  if !filereadable(filename)
+    return 0
+  endif
+
   let file_content = readfile(filename)
   let buffer_content = getline(1, '$')
-
-  let not_modifyed = buffer_content == file_content
-  return not_modifyed
+  return buffer_content == file_content
 endfunction
 
 function! fileheader#render_template(tpl, update)
@@ -126,7 +129,11 @@ function! fileheader#render_template(tpl, update)
   end
 
   if match(line, '{{email}}') != -1
-    let line = substitute(line, '{{email}}', g:fileheader_email, 'g')
+    if g:fileheader_show_email
+      let line = substitute(line, '{{email}}', ' <'.g:fileheader_email.'>', 'g')
+    else
+      let line = substitute(line, '{{email}}', '', 'g')
+    endif
   end
 
   if match(line, '{{date}}') != -1
@@ -172,12 +179,22 @@ function! fileheader#add_file_header()
   let delimiter = get(s:delimiter_map, &filetype)
 
   if !empty(delimiter)
+    if g:fileheader_author == ''
+      echo 'vim-fileheader: can not found g:fileheader_author value'
+      return
+    endif
+
     let header = fileheader#get_header(delimiter)
-    for line in reverse(header)
-      call append(0, line)
-    endfor
+    call append(0, header)
   else
     echo 'vim-fileheader: can not found '.&filetype.' filetype delimiter'
+  endif
+endfunction
+
+function! fileheader#auto_add_file_header()
+  let content = join(getline(0, '$'), '')
+  if content == ''
+    call fileheader#add_file_header()
   endif
 endfunction
 
