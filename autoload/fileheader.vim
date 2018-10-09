@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:38:15
-" @Last Modified by: ahonn
-" @Last Modified time: 2018-10-05 11:24:49
+" @Last Modified by: 
+" @Last Modified time: 2018-10-09 17:33:02
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
@@ -47,11 +47,11 @@ endif
 
 let s:creator_templates = [
   \ '@Author: {{author}}{{email}}',
-  \ '@Date: {{date}}',
+  \ '@Date:   {{date}}',
   \ ]
 
 let s:editor_templates = [
-  \ '@Last Modified by: {{author}}{{email}}',
+  \ '@Last Modified by:   {{author}}{{email}}',
   \ '@Last Modified time: {{date}}',
   \ ]
 
