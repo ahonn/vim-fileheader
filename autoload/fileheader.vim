@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:38:15
-" @Last Modified by:
-" @Last Modified time: 2018-10-22 16:24:17
+" @Last Modified by: ahonn
+" @Last Modified time: 2018-10-22 16:47:44
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
@@ -70,16 +70,21 @@ function! fileheader#run_command_async(cmd, handler)
 endfunction
 
 function! fileheader#load_git_config()
+  let s:job_ids = []
   if has('nvim')
-    function! s:set_author_handler(id, data, evnet)
+    function! s:set_author_handler(id, data, event)
       let msg = join(a:data, '')
-      let g:fileheader_author = msg
+      if msg != ''
+        let g:fileheader_author = msg
+      endif
     endfunction
   else
     function! s:set_author_handler(channel)
       while ch_status(a:channel, {'part': 'out'}) == 'buffered'
         let msg = ch_read(a:channel)
-        let g:fileheader_author = msg
+        if msg != ''
+          let g:fileheader_author = msg
+        endif
       endwhile
     endfunction
   endif
@@ -89,13 +94,17 @@ function! fileheader#load_git_config()
     if has('nvim')
       function! s:set_email_handler(id, data, event)
         let msg = join(a:data, '')
-        let g:fileheader_email = msg
+        if msg != ''
+          let g:fileheader_email = msg
+        endif
       endfunction
     else
       function! s:set_email_handler(channel)
         while ch_status(a:channel, {'part': 'out'}) == 'buffered'
           let msg = ch_read(a:channel)
-          let g:fileheader_email = msg
+          if msg != ''
+            let g:fileheader_email = msg
+          endif
         endwhile
       endfunction
     endif

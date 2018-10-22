@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:21:37
 " @Last Modified by: ahonn
-" @Last Modified time: 2018-10-05 11:37:42
+" @Last Modified time: 2018-10-22 16:47:06
 
 if !exists('g:fileheader_auto_add')
   let g:fileheader_auto_add = 0
@@ -39,16 +39,16 @@ if !exists('g:fileheader_delimiter_map')
   let g:fileheader_delimiter_map = {}
 endif
 
+if g:fileheader_by_git_config == 1
+  call fileheader#load_git_config()
+endif
+
 if g:fileheader_auto_add
   autocmd BufReadPost,BufNewFile * call fileheader#auto_add_file_header()
 endif
 
 if g:fileheader_auto_update
   autocmd BufWritePre * call fileheader#update_file_header()
-endif
-
-if g:fileheader_by_git_config == 1
-  autocmd VimEnter * call fileheader#load_git_config()
 endif
 
 command! -range=% AddFileHeader call fileheader#add_file_header()
