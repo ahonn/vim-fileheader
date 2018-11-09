@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:38:15
 " @Last Modified by: ahonn
-" @Last Modified time: 2018-10-22 16:47:44
+" @Last Modified time: 2018-11-09 14:56:22
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
@@ -158,6 +158,8 @@ function! fileheader#render_template(tpl, update)
 
     let line = substitute(line, '{{date}}', date, 'g')
   end
+
+  call histdel('search', -1)
   return line
 endfunction
 
@@ -212,6 +214,7 @@ function! fileheader#update_file_header()
 
   if !empty(delimiter)
     let cursor = getpos(".")
+
     for tpl in s:editor_templates
       let pat = substitute(tpl, '{{.*}}', '.*', 'g')
       let sub = fileheader#render_template(tpl, 1)
@@ -223,6 +226,9 @@ function! fileheader#update_file_header()
       endif
       silent! execute ':undojoin | 1,'.last_line_number.'s/'.pat.'/'.sub.'/g'
     endfor
+
+    call histdel('search', -1)
     call setpos('.', cursor)
+
   endif
 endfunction
