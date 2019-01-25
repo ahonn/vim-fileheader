@@ -48,7 +48,7 @@ g:fileheader_auto_update                            *g:fileheader_auto_update*
 
                 Default value: 1
 
-g:fileheader_default_author                         *g:fileheader_default_author*
+g:fileheader_author                         *g:fileheader_author*
 
                 Set default author name.
 
