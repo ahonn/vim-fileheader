@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:38:15
-" @Last Modified by: ahonn
-" @Last Modified time: 2018-11-09 14:56:22
+" @Last Modified by: [30m[mahonn
+" @Last Modified time: 2019-05-14 15:26:52
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
@@ -88,7 +88,7 @@ function! fileheader#load_git_config()
       endwhile
     endfunction
   endif
-  call fileheader#run_command_async('git config user.name', function('s:set_author_handler'))
+  call fileheader#run_command_async(['git', 'config', '--get', 'user.name'], function('s:set_author_handler'))
 
   if g:fileheader_show_email
     if has('nvim')
@@ -108,7 +108,7 @@ function! fileheader#load_git_config()
         endwhile
       endfunction
     endif
-    call fileheader#run_command_async('git config user.email', function('s:set_email_handler'))
+    call fileheader#run_command_async(['git', 'config', '--get', 'user.email'], function('s:set_email_handler'))
   endif
 endfunction
 
