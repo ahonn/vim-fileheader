@@ -169,15 +169,21 @@ function! fileheader#get_header(delimiter)
   let char = a:delimiter['char']
 
   let header = []
+  if !empty(begin_line)
+    let lines = split(begin_line, "\n")
+    for line in lines
+      call add(header, line)
+    endfor
+  endif
   for tpl in s:templates
     let line = fileheader#render_template(tpl, 0)
     call add(header, char.line)
   endfor
-  if !empty(begin_line)
-    call insert(header, begin_line, 0)
-  endif
   if !empty(end_line)
-    call add(header, end_line)
+    let lines = split(end_line, "\n")
+    for line in lines
+      call add(header, line)
+    endfor
   endif
   if g:fileheader_new_line_at_end
     call add(header, '')
