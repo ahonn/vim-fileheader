@@ -110,7 +110,7 @@ ABOUT                                           *fileheader-about*
 
 You can get the latest version, see the changelog, or report a bug on GitHub:
 
-https://github.com/ahonn/filehdaer.nvim
+https://github.com/ahonn/fileheader.nvim
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl
