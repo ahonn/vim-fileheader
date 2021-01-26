@@ -99,7 +99,8 @@ g:fileheader_delimiter_map                           *g:fileheader_delimiter_map
 g:fileheader_templates_map                           *g:fileheader_templates_map*
 
                 Custom file header templates.
-                For example, we use the following settings to add front matter to markdown and automatically update the modified date
+                For example, we use the following settings to add front matter
+                to markdown and automatically update the modified date
 >
  let g:fileheader_delimiter_map = {
    \ 'markdown': { 'begin': '---', 'char': '', 'end': '---' }
