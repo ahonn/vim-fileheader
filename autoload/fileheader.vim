@@ -1,7 +1,7 @@
 " @Author: ahonn
 " @Date: 2018-10-03 23:38:15
-" @Last Modified by: [30m[mahonn
-" @Last Modified time: 2019-05-14 15:26:52
+" @Last Modified by: ahonn
+" @Last Modified time: 2021-01-26 23:34:41
 
 let s:vim_style = { 'begin': '', 'char': '" ', 'end': '' }
 let s:c_style = { 'begin': '/*', 'char': ' * ', 'end': ' */' }
@@ -46,17 +46,12 @@ if exists('g:fileheader_delimiter_map')
   call extend(s:delimiter_map, g:fileheader_delimiter_map)
 endif
 
-let s:creator_templates = [
-  \ '@Author: {{author}}{{email}}',
-  \ '@Date: {{date}}',
+let s:templates = [
+  \ '@Author: {{author}} <{{email}}>',
+  \ '@Date: {{created_date}}',
+  \ '@Last Modified by: {{modifier}} <{{modifier_email}}>',
+  \ '@Last Modified time: {{modified_date}}',
   \ ]
-
-let s:editor_templates = [
-  \ '@Last Modified by: {{author}}{{email}}',
-  \ '@Last Modified time: {{date}}',
-  \ ]
-
-let s:templates = s:creator_templates + s:editor_templates
 
 function! fileheader#run_command_async(cmd, handler)
   if has('nvim')
@@ -70,6 +65,7 @@ function! fileheader#run_command_async(cmd, handler)
   endif
 endfunction
 
+" load git config user name and email
 function! fileheader#load_git_config()
   let s:job_ids = []
   if has('nvim')
@@ -113,6 +109,7 @@ function! fileheader#load_git_config()
   endif
 endfunction
 
+" get current file name
 function! fileheader#get_file_name()
   let ext = tolower(expand("%:e"))
   let fname = tolower(expand('%<'))
@@ -120,6 +117,7 @@ function! fileheader#get_file_name()
   return filename
 endfunction
 
+" check whether the file has been modified
 function! fileheader#file_not_modifyed()
   let filename = fileheader#get_file_name()
 
@@ -132,36 +130,66 @@ function! fileheader#file_not_modifyed()
   return buffer_content == file_content
 endfunction
 
+" render template by author/email/date and update modifier information when modified
 function! fileheader#render_template(tpl, update)
-  let line = a:tpl
-  if match(line, '{{author}}') != -1
-    let line = substitute(line, '{{author}}', g:fileheader_author, 'g')
+  let tpl = a:tpl
+  let date = strftime(g:fileheader_date_format)
+
+  " skip when update, just render at first time
+  if !a:update
+    if match(tpl, '{{author}}') != -1
+      let tpl = substitute(tpl, '{{author}}', g:fileheader_author, 'g')
+    end
+
+    if match(tpl, '{{email}}') != -1
+      if g:fileheader_show_email
+        let tpl = substitute(tpl, '{{email}}', g:fileheader_email, 'g')
+      else
+        let tpl = substitute(tpl, '{{email}}', '', 'g')
+      endif
+    end
+
+    if match(tpl, '{{created_date}}') != -1
+      let tpl = substitute(tpl, '{{created_date}}', date, 'g')
+    end
   end
 
-  if match(line, '{{email}}') != -1
+  if match(tpl, '{{modifier}}') != -1
+    let tpl = substitute(tpl, '{{modifier}}', g:fileheader_author, 'g')
+  end
+
+  if match(tpl, '{{modifier_email}}') != -1
     if g:fileheader_show_email
-      let line = substitute(line, '{{email}}', ' <'.g:fileheader_email.'>', 'g')
+      let tpl = substitute(tpl, '{{modifier_email}}', g:fileheader_email, 'g')
     else
-      let line = substitute(line, '{{email}}', '', 'g')
+      let tpl = substitute(tpl, '{{modifier_email}}', '', 'g')
     endif
   end
 
-  if match(line, '{{date}}') != -1
-    let date = strftime(g:fileheader_date_format)
+  if match(tpl, '{{modified_date}}') != -1
+    let not_modifyed = fileheader#file_not_modifyed()
     if (a:update)
-      let not_modifyed = fileheader#file_not_modifyed()
       if not_modifyed
-        let date_line_pat = substitute(line, '{{date}}', '.*', 'g')
+        let date_line_pat = substitute(tpl, '{{modified_date}}', '.*', 'g')
         let date_line_number = search(date_line_pat)
-        let line = matchstr(getline(date_line_number), date_line_pat)
+        let tpl = matchstr(getline(date_line_number), date_line_pat)
       end
-    end
+    endif
 
-    let line = substitute(line, '{{date}}', date, 'g')
+    let tpl = substitute(tpl, '{{modified_date}}', date, 'g')
   end
 
   call histdel('search', -1)
-  return line
+  return tpl
+endfunction
+
+" get file header templates, supported custom
+function! fileheader#get_templates()
+  let templates = get(g:fileheader_templates_map, &filetype)
+  if empty(templates)
+    let templates = s:templates
+  endif
+  return templates
 endfunction
 
 function! fileheader#get_header(delimiter)
@@ -170,16 +198,22 @@ function! fileheader#get_header(delimiter)
   let char = a:delimiter['char']
 
   let header = []
+  " add begin line
   if !empty(begin_line)
     let lines = split(begin_line, "\n")
     for line in lines
       call add(header, line)
     endfor
   endif
-  for tpl in s:templates
+
+  " render by template
+  let templates = fileheader#get_templates()
+  for tpl in templates
     let line = fileheader#render_template(tpl, 0)
     call add(header, char.line)
   endfor
+
+  " add end line
   if !empty(end_line)
     let lines = split(end_line, "\n")
     for line in lines
@@ -222,16 +256,22 @@ function! fileheader#update_file_header()
   if !empty(delimiter)
     let cursor = getpos(".")
 
-    for tpl in s:editor_templates
-      let pat = substitute(tpl, '{{.*}}', '.*', 'g')
-      let sub = fileheader#render_template(tpl, 1)
+    let templates = fileheader#get_templates()
+    for tpl in templates
+      let match_modifier = match(tpl, '{{modifier}}') != -1
+      let match_modifier_email = match(tpl, '{{modifier_email}}') != -1
+      let match_modified_date = match(tpl, '{{modified_date}}') != -1
+      if match_modifier || match_modifier_email || match_modified_date
+        let pat = substitute(tpl, '{{.*}}', '.*', 'g')
+        let sub = fileheader#render_template(tpl, 1)
 
-      let max_line_number = line('$')
-      let last_line_number = 10
-      if (max_line_number < 10)
-        let last_line_number = max_line_number
-      endif
-      silent! execute ':undojoin | 1,'.last_line_number.'s/'.pat.'/'.sub.'/g'
+        let max_line_number = line('$')
+        let last_line_number = 10
+        if (max_line_number < 10)
+          let last_line_number = max_line_number
+        endif
+        silent! execute ':undojoin | 1,'.last_line_number.'s/'.pat.'/'.sub.'/g'
+      end
     endfor
 
     call histdel('search', -1)
