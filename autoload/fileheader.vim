@@ -36,6 +36,7 @@ let s:delimiter_map = {
   \ 'lua': s:haskell_style,
   \ 'html': s:html_style,
   \ 'xml': s:html_style,
+  \ 'vue': s:html_style,
   \ 'erlang': s:erlang_style,
   \ 'clojure': s:lisp_style,
   \ 'scheme': s:lisp_style,
